@@ -1,0 +1,6 @@
+#Folders
+temp/
+.idea/
+
+#Files
+config.json

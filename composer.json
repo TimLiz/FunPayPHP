@@ -1,0 +1,17 @@
+{
+  "name": "vendor_name/funpayphp",
+  "description": "FunPay PHP API library",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "TimLiz",
+      "email": "contact.timliz@gmail.com"
+    }
+  ],
+  "require": {
+    "php":">=8.1",
+    "ext-curl": "*",
+    "ext-json": "*"
+  }
+}
