@@ -8,6 +8,9 @@
       "email": "contact.timliz@gmail.com"
     }
   ],
+  "autoload": {
+    "files": ["classes/run.php"]
+  },
   "require": {
     "php":">=8.1",
     "ext-curl": "*",
