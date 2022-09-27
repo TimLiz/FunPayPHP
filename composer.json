@@ -1,7 +1,6 @@
 {
   "name": "timliz/funpayphp",
   "description": "FunPay PHP API library",
-  "minimum-stability": "dev",
   "license": "MIT",
   "authors": [
     {
