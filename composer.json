@@ -1,5 +1,5 @@
 {
-  "name": "vendor_name/funpayphp",
+  "name": "timliz/funpayphp",
   "description": "FunPay PHP API library",
   "minimum-stability": "stable",
   "license": "MIT",
