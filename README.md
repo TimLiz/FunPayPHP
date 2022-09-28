@@ -1,6 +1,12 @@
 # FunPayPHP
 Добро пожаловать в FunPay PHP! Эта библиотека позволяет удобно и легко создавать ботов для биржи FunPay
 
+## Установка
+**Composer**
+```
+composer require timliz/funpayphp
+```
+
 ## Первый бот
 ```php
 <?php
