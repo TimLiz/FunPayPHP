@@ -19,4 +19,16 @@ class messageBuilder {
     public function addImage():never {
         throw new Exception("addImage is not finished yet!");
     }
+
+    /**
+     * Use this to send message fast
+     *
+     * @param string $msg Msg to send
+     * @return messageBuilder
+     */
+    static function fastMessage(string $msg):messageBuilder {
+        $message = new messageBuilder();
+        $message->content = $msg;
+        return $message;
+    }
 }
