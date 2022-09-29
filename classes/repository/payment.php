@@ -15,19 +15,19 @@ class paymentRepository {
      */
     public readonly string $nameRaw;
     /**
-     * @var string $name Name of payment(ex: 🔓 | Jailbreak Common safe(5k)) Tip: This wont work if you using ", " in youre item name, be carefull!
+     * @var string $name Name of payment(ex: 🔓 | Jailbreak Common safe(5k)) Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
     public string $name;
     /**
-     * @var string $category Category of payment(ex: Предметы) Tip: This wont work if you using ", " in youre item name, be carefull!
+     * @var string $category Category of payment(ex: Предметы) Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
     public string $category;
     /**
-     * @var string|null $amout Amout items payed for(ex: 2 шт) Tip: This wont work if you using ", " in youre item name, be carefull!
+     * @var string|null $amount Amount items paid for(ex: 2 шт) Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
-    public string|null $amout;
+    public string|null $amount;
     /**
-     * @var string|null $username Username of buyer Tip: This wont work if you using ", " in youre item name, be carefull!
+     * @var string|null $username Username of buyer Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
     public string|null $username;
     /**
@@ -42,18 +42,22 @@ class paymentRepository {
      * @var string Game category(ex: Услуги)
      */
     public string $gameCategory;
+    /**
+     * @var string payment page URL
+     */
+    public string $paymentURL;
 
     public userRepository $user;
-
     public function __construct(DOMNode $payment) {
         $this->ID = $payment->childNodes->item(3)->textContent;
         $this->nameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
         $this->underNameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
+        $this->paymentURL = $payment->attributes->item(0)->textContent;
 
         $nameRawExploded = explode(", ", $this->nameRaw);
         $this->name = $nameRawExploded[0];
         $this->category = $nameRawExploded[1];
-        @$this->amout = $nameRawExploded[2];
+        @$this->amount = $nameRawExploded[2];
         @$this->username = $nameRawExploded[3];
 
         $underNameExploded = explode(", ", $this->underNameRaw);
@@ -81,7 +85,7 @@ class paymentRepository {
      * @param string $name Name of value
      * @param string $value Value
      * @param bool $rewrite Should function rewrite value
-     * @return bool True on sucess
+     * @return bool True on success
      * @throws Exception On error
      */
     public function saveTempData(string $name, string $value, bool $rewrite = false):bool {
@@ -101,7 +105,7 @@ class paymentRepository {
      * Reads temp data
      *
      * @param string $name Name of value
-     * @return string String on sucess
+     * @return string String on success
      * @throws Exception On error
      */
     public function readTempData(string $name):string {
@@ -113,7 +117,7 @@ class paymentRepository {
     }
 
     /**
-     * @return bool Returns True on sucess
+     * @return bool Returns True on success
      * @throws Exception On error
      */
     public function refund():bool {
