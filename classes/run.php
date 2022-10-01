@@ -101,6 +101,7 @@ class run extends aliases {
     public function run() {
         echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
         echo "Ready!".PHP_EOL;
+
         while (true) {
             if (!isset($this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) || !$this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) {
                 $msg = $this->message->checkForMsg();

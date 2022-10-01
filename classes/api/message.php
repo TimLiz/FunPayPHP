@@ -30,8 +30,7 @@ class message {
     }
 
     /**
-     * @return messageRepository|bool
-     * @throws Exception
+     * @return messageRepository|bool False on error/no messages
      */
     public function checkForMsg():messageRepository|bool {
         try {
@@ -45,7 +44,7 @@ class message {
                 return new messageRepository($html, $this->parent);
             }
         } catch (Exception $e) {
-            //We don't need anything here
+            return false;
         }
 
         return false;

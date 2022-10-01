@@ -50,10 +50,21 @@ class user {
         ];
     }
 
+    /**
+     * Checks for orders
+     *
+     * @return bool True on order and false if no orders / error
+     */
     public function checkForOrders():bool {
-        $response = request::xhr("runner/", 'objects=%5B%7B%22type%22%3A%22orders_counters%22%2C%22id%22%3A%22'.$this->ID.'%22%2C%22data%22%3Afalse%7D%5D', $this->session, true);
-        if ($response["objects"][0]["data"]["seller"] > 0) {
-            return true;
+        try {
+            $response = request::xhr("runner/", 'objects=%5B%7B%22type%22%3A%22orders_counters%22%2C%22id%22%3A%22' . $this->ID . '%22%2C%22data%22%3Afalse%7D%5D', $this->session, true);
+
+            if ($response["objects"][0]["data"]["seller"] > 0) {
+                return true;
+            }
+
+        } catch (Exception $e) {
+            return false;
         }
 
         return false;
