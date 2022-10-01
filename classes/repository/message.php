@@ -13,7 +13,7 @@ class messageRepository {
     public readonly string $date;
     public readonly string $node;
     public readonly string $nodeID;
-    public bool $IsMessage = true;
+    public bool $isMessage;
     private readonly run $runner;
 
     public function __construct(DOMNodeList $DOM, run $runner) {
@@ -30,8 +30,13 @@ class messageRepository {
         $parser = new parser($chats);
         $messages = $parser->getByClassname("message-head");
         $last = $messages->item($messages->length - 1);
-        $link = $last->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
-        $this->author = $this->runner->getUser(explode("/", $link)[4]);
+        if ($last->childNodes->item(1)->attributes->item(0)->textContent == "chat-message") {
+            $this->isMessage = true;
+            $link = $last->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
+            $this->author = $this->runner->getUser(explode("/", $link)[4]);
+        } else {
+            $this->isMessage = false;
+        }
     }
 
     /**

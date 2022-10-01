@@ -42,7 +42,7 @@ class message {
 
             if ($response["objects"][0]["data"]["counter"] > 0) {
                 $msg = new messageRepository($html, $this->parent);
-                if ($msg->IsMessage) {
+                if ($msg->isMessage) {
                     return $msg;
                 } else {
                     return false;
