@@ -39,6 +39,13 @@ abstract class request {
         return true;
     }
 
+    /**
+     * Basic http GET request
+     *
+     * @param string $url URL
+     * @param string $session Session
+     * @return string Data
+     */
     static public function basic(string $url, string $session): string {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://funpay.com/'.$url);

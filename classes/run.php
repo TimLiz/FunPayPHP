@@ -87,7 +87,7 @@ class run extends aliases {
         $this->users = array();
     }
 
-    public function getUser(int $ID, string $username):userRepository {
+    public function getUser(int $ID):userRepository {
         if (!isset($this->users[$ID])) {
             $return = new userRepository($ID, $this);
             $this->users[$ID] = $return;

@@ -4,6 +4,7 @@ namespace run;
 
 use DOMElement;
 use DOMNodeList;
+use Exception;
 use messageBuilder\messageBuilder;
 
 class messageRepository {
@@ -32,11 +33,16 @@ class messageRepository {
 
         $chats = request::basic("chat/?node=".$this->nodeID, $this->runner->user->session);
         $parser = new parser($chats);
-        $CPU = $parser->getByAttribute("data-type", "c-p-u");
+        $messages = $parser->getByClassname("message-head");
+        $last = $messages->item($messages->length-1);
 
-        $this->author = $this->runner->getUser($CPU->item(0)->attributes[2]->textContent, $user->childNodes[3]->textContent);
+        $link = $last->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
+        $this->author = $this->runner->getUser(explode("/", $link)[4]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function reply(messageBuilder $msg): void {
         $this->author->sendMessage($msg);
     }

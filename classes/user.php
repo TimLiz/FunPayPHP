@@ -30,9 +30,41 @@ class user {
      */
     public readonly array $settings;
     private readonly run $runner;
+    /**
+     * @var array Lots
+     */
     private array $lots = array();
     private bool $isLotsDefined = false;
     private int $lotsLastRise = 0;
+    private int $lastUpdate = 0;
+    /**
+     * Updates every 10 minutes
+     *
+     * @var string Money in raw view(ex: 684 ₽)
+     */
+    public string $moneyRaw;
+    /**
+     * Updates every 10 minutes
+     *
+     * @var int Formatted money(ex: 684)
+     */
+    public int $money;
+    /**
+     * @var string URL of user profile(ex: https://funpay.com/users/1110493/)
+     */
+    public string $url;
+    /**
+     * Updates every 10 minutes
+     *
+     * @var string Money in raw view(ex: Всего 131 отзыв)
+     */
+    public string $ratingRaw;
+    /**
+     * Updates every 10 minutes
+     *
+     * @var int Formatted rating(ex: 128)
+     */
+    public int $rating;
 
     public function __construct(array $settings, run $runner) {
         echo "Loading user...".PHP_EOL;
@@ -45,9 +77,12 @@ class user {
         $this->session = $session;
         $this->lang = $application["locale"];
         $this->ID = $application["userId"];
+        $this->url = "https://funpay.com/users/".$this->ID."/";
         @$this->webpush = [
             "app" => $application["webpush"]["app"]
         ];
+
+        $this->update();
     }
 
     /**
@@ -68,6 +103,35 @@ class user {
         }
 
         return false;
+    }
+
+    /**
+     * @return bool True on success, False on error/timer still waiting
+     */
+    public function update(): bool {
+        if (time() - $this->lastUpdate > 600) {
+            $settingsPage = request::basic(substr($this->url, 19), $this->session);
+            try {
+                $parser = new parser($settingsPage);
+                //Getting money with ₽
+                $this->moneyRaw = $parser->getByClassname("badge-balance")->item(0)->textContent;
+
+                //Getting money without ₽
+                $this->money = trim($this->moneyRaw, "₽");
+
+                //Getting raw rating
+                $this->ratingRaw = $parser->getByClassname("rating-full-count")->item(0)->textContent;
+
+                //Getting formatted rating
+                $this->rating = explode(" ", $this->ratingRaw)[1];
+
+                return true;
+            } catch (Exception $e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     public function rise():bool {
