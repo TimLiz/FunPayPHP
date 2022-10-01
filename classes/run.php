@@ -103,9 +103,10 @@ class run extends aliases {
         echo "Ready!".PHP_EOL;
 
         while (true) {
+            $donotcontinue = false;
             if (!isset($this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) || !$this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) {
-                $msg = $this->message->checkForMsg();
-                if ($msg && $msg->author->answered) {
+                $msg = @$this->message->checkForMsg() or $donotcontinue = true;
+                if ($msg && $msg->author->answered && !$donotcontinue) {
                     if ($msg->author->ID != $this->user->ID) {
                         $msg->author->answered = false;
                         $this->events->fireEvent(event::message, $msg);
