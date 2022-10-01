@@ -71,7 +71,7 @@ class paymentRepository {
         $ID = explode("/", $link)[4];
 
         if (!isset(run::$runner->users[$this->ID])) {
-            $this->user = new userRepository($userRaw->childNodes->item(0)->textContent, $ID, run::$runner);
+            $this->user = new userRepository($ID, run::$runner);
         } else {
             $this->user = run::$runner->users[$this->ID];
         }

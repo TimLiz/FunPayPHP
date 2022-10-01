@@ -12,8 +12,7 @@ class userRepository {
     public string $logo;
     private run $runner;
 
-    public function __construct(string $name, int $ID, run $runner) {
-        $this->name = $name;
+    public function __construct(int $ID, run $runner) {
         $this->ID = $ID;
         $this->runner = $runner;
 
@@ -24,12 +23,18 @@ class userRepository {
         $logo = explode(": ", $logo)[1];
         $logo = substr($logo, 4, -2);
 
+        $this->name = $parser->getByClassname("mr4")->item(0)->textContent;
+
         if ($logo == "/img/layout/avatar.png") {
             $logo = "https://funpay.com/img/layout/avatar.png";
         }
         $this->logo = $logo;
     }
 
+    /**
+     * @throws Exception On error
+     * @return watchingRepository
+     */
     public function getViewing(): watchingRepository {
         $respond = request::xhr("runner/",'objects=%5B%7B%22type%22%3A%22c-p-u%22%2C%22id%22%3A%22'.$this->ID.'%22%2C%22data%22%3Afalse%7D%5D',$this->runner->user->session, true);
         $html = $respond["objects"][0]["data"]["html"]["desktop"];
