@@ -40,8 +40,9 @@ class messageRepository {
 
             $link = $last->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
             $this->author = $this->runner->getUser(explode("/", $link)[4]);
-        } catch (Exception $e) {}
-        $this->IsMessage = false;
+        } catch (Exception $e) {
+            $this->IsMessage = false;
+        }
     }
 
     /**
