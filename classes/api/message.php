@@ -36,6 +36,7 @@ class message {
     public function checkForMsg():messageRepository|bool {
         try {
             $response = request::xhr("runner/", 'objects=%5B%7B%22type%22%3A%22chat_bookmarks%22%2C%22id%22%3A%22'.$this->parent->user->ID.'%22%2C%22data%22%3Afalse%7D%5D', $this->parent->user->session, true);
+
             $html = $response["objects"][0]["data"]["html"];
             $parser = new parser(mb_convert_encoding($html, 'HTML-ENTITIES', 'utf-8'));
             $html = $parser->getByClassname("contact-list");

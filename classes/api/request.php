@@ -25,7 +25,8 @@ abstract class request {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $answer = json_decode(curl_exec($ch), true);
         if ($answer == null) {
-            trigger_error("Cannot xhr JSON!", E_USER_WARNING);
+            trigger_error("XHR getting error! Retrying...", E_USER_WARNING);
+            return self::xhr($api, $data, $session, $return);
         }
 
         if (isset($answer["error"]) && $answer["error"]) {
