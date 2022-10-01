@@ -41,7 +41,12 @@ class message {
             $html = $parser->getByClassname("contact-list");
 
             if ($response["objects"][0]["data"]["counter"] > 0) {
-                return new messageRepository($html, $this->parent);
+                $msg = new messageRepository($html, $this->parent);
+                if ($msg->IsMessage) {
+                    return $msg;
+                } else {
+                    return false;
+                }
             }
         } catch (Exception $e) {
             return false;
