@@ -30,9 +30,14 @@ class messageRepository {
         $parser = new parser($chats);
         $messages = $parser->getByClassname("message-head");
         $last = $messages->item($messages->length - 1);
+
         if ($last->childNodes->item(1)->attributes->item(0)->textContent == "chat-message") {
             $this->isMessage = true;
             $link = $last->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
+            $this->author = $this->runner->getUser(explode("/", $link)[4]);
+        } elseif ($last->childNodes->item(3)->attributes->item(0)->textContent == "chat-message") {
+            $this->isMessage = true;
+            $link = $last->childNodes->item(3)->childNodes->item(1)->childNodes->item(0)->attributes->item(0)->textContent;
             $this->author = $this->runner->getUser(explode("/", $link)[4]);
         } else {
             $this->isMessage = false;
