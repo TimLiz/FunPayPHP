@@ -32,11 +32,18 @@ class userRepository {
     }
 
     /**
+     * Gets lot that user view right now
+     *
      * @throws Exception On error
-     * @return watchingRepository
+     * @return watchingRepository|false watchingRepository or False if nothing
      */
-    public function getViewing(): watchingRepository {
+    public function getViewing(): watchingRepository|false {
         $respond = request::xhr("runner/",'objects=%5B%7B%22type%22%3A%22c-p-u%22%2C%22id%22%3A%22'.$this->ID.'%22%2C%22data%22%3Afalse%7D%5D',$this->runner->user->session, true);
+
+        if (!isset($respond["objects"][0]["data"]["html"]["desktop"])) {
+            return false;
+        }
+
         $html = $respond["objects"][0]["data"]["html"]["desktop"];
         $DOM = new \DOMDocument();
         @$DOM->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'utf-8'));
