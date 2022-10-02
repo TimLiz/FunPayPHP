@@ -166,7 +166,14 @@ class user {
             $lotID = explode("/", $offers->item($offerNow)->childNodes->item(1)->attributes->item(0)->textContent)[4];
             $lotPage = request::basic("lots/".$lotID."/trade", $this->session);
             $parser = new parser($lotPage);
-            $data = $parser->getByClassname("js-lot-raise")->item(0);
+            $data = $parser->getByClassname("js-lot-raise");
+            if ($data->length == 0) {
+                if ($offers->length - 1 >= $offerNow) {
+                    $offerNow++;
+                    continue;
+                }
+            }
+            $data = $data->item(0);
             $gameID = $data->attributes->item(2)->textContent;
 
             array_unshift($this->lots, array(

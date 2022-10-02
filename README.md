@@ -28,19 +28,69 @@ $FunPay = new run();
 $FunPay->on(Event::message, function (messageRepository $msg) {
     //Мы получили messageRepository от этого события
 
-    //Создаём сообщение
-    $message = new messageBuilder\messageBuilder();
-    $message->content = "Hello world!";
-
     //Отвечаем пользователю сообщением
-    $msg->reply($message);
+    $msg->reply(\messageBuilder\messageBuilder::fastMessage("Hello world!"));
 });
 
 //Запускаем бота
 $FunPay->run();
 ```
 
-Пример выше отвечает Hello world! на сообщения.
+Пример выше отвечает Hello world! На сообщения.
+
+## Таймеры
+#### Задержки
+```php
+$FunPay->timers->addTimer(6, function () {
+    //Код, который исполнится через 6 секунд
+});
+```
+
+#### Циклы
+```php
+$ID = $FunPay->timers->addRepeated(1, function () {
+    //Код, который будет исполняться каждую 1 секунду
+});
+```
+
+## События
+В основном примере вы видели пример события message, ниже я перечислю все события:
+
+#### Сообщение
+```php
+$FunPay->on(event::message, function (\run\messageRepository $msg) {
+   //Код, исполняющийся при событии
+});
+```
+
+#### Оплата
+```php
+$FunPay->on(event::payment, function (\run\paymentRepository $payment) {
+   //Код, исполняющийся при событии
+});
+```
+
+#### Ваше сообщение
+**Внимание: _Это событие не надёжно, не советую его использовать!_**
+```php
+$FunPay->on(event::youreMessage, function (\run\messageRepository $msg) {
+   //Код, исполняющийся при событии
+});
+```
+
+#### Поднятие лота
+```php
+$FunPay->on(event::lotRise, function () {
+   //Код, исполняющийся при событии
+});
+```
+
+#### Главный цикл
+```php
+$FunPay->on(event::loop, function () {
+   //Код, исполняющийся при событии
+});
+```
 
 ### Примечание
 Авто поднятие и всегда онлайн работают,

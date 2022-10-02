@@ -26,6 +26,7 @@ require_once(__DIR__."/repository/watching.php");
 require_once(__DIR__."/repository/payment.php");
 require_once(__DIR__."/builders/messageBuilder.php");
 require_once(__DIR__."/builders/lotBuilder.php");
+require_once(__DIR__."/timer.php");
 
 class run extends aliases {
     /**
@@ -36,7 +37,9 @@ class run extends aliases {
     public events $events;
     public user $user;
     public message $message;
+    public timer $timers;
     public array $users;
+    public bool $isReady = false;
 
     /**
      * @var string The golden key
@@ -83,10 +86,17 @@ class run extends aliases {
         $this->events = new events($this);
         $this->user = new user($settings, $this);
         $this->message = new message($this);
+        $this->timers = new timer();
         self::$runner = $this;
         $this->users = array();
     }
 
+    /**
+     * Gets user
+     *
+     * @param int $ID ID of user you want's got userRepository from
+     * @return userRepository User repository
+     */
     public function getUser(int $ID):userRepository {
         if (!isset($this->users[$ID])) {
             $return = new userRepository($ID, $this);
@@ -102,32 +112,40 @@ class run extends aliases {
         echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
         echo "Ready!".PHP_EOL;
 
+        $this->timers->addRepeated(3, function () {
+            $this->loop();
+        }, false);
+
         while (true) {
-            $donotcontinue = false;
-            if (!isset($this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) || !$this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) {
-                $msg = @$this->message->checkForMsg() or $donotcontinue = true;
-                if ($msg && $msg->author->answered && !$donotcontinue) {
-                    if ($msg->author->ID != $this->user->ID) {
-                        $msg->author->answered = false;
-                        $this->events->fireEvent(event::message, $msg);
-                        $msg->author->answered = true;
-                    } else {
-                        $this->events->fireEvent(event::youreMessage, $msg);
-                    }
-                }
-            }
-
-            if ($this->user->checkForOrders()) {
-                $payment = paymentRepository::new();
-
-                if ($payment) {
-                    $this->events->fireEvent(event::payment, $payment);
-                }
-            }
-
-            $this->user->rise();
-
-            sleep(3);
+            $this->timers->loop();
+            $this->events->fireEvent(event::loop);
         }
+    }
+
+    private function loop() {
+        $this->isReady = true;
+
+        if (!isset($this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) || !$this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) {
+            $msg = @$this->message->checkForMsg();
+            if ($msg && $msg->author->answered) {
+                if ($msg->author->ID != $this->user->ID) {
+                    $msg->author->answered = false;
+                    $this->events->fireEvent(event::message, $msg);
+                    $msg->author->answered = true;
+                } else {
+                    $this->events->fireEvent(event::youreMessage, $msg);
+                }
+            }
+        }
+
+        if ($this->user->checkForOrders()) {
+            $payment = paymentRepository::new();
+
+            if ($payment) {
+                $this->events->fireEvent(event::payment, $payment);
+            }
+        }
+
+        $this->user->rise();
     }
 }

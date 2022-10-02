@@ -11,7 +11,7 @@ abstract class event {
     const payment = 2;
 
     /**
-     * Calls on youre message, sends messageRepository into listener
+     * Calls on you're messaged, sends messageRepository into listener
      */
     const youreMessage = 3;
 
@@ -19,4 +19,9 @@ abstract class event {
      * Calls on lot rise
      */
     const lotRise = 4;
+
+    /**
+     * Calls every loop interaction
+     */
+    const loop = 5;
 }
