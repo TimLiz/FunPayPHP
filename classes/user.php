@@ -3,6 +3,7 @@
 namespace run;
 
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 
 class user {
     /**
@@ -143,9 +144,24 @@ class user {
             $this->defineOffersToRise();
         }
 
-        foreach ($this->lots as $lot) {
+        foreach ($this->lots as $key => $lot) {
             try {
-                request::xhr("lots/raise", "game_id=" . $lot["game"] . "&node_id=" . $lot["lot"], run::$runner->user->session);
+                if (count($lot) == 1) {
+                    request::xhr("lots/raise", "game_id=" . $key . "&node_id=" . $lot[0], run::$runner->user->session);
+                } else {
+                    $array = array(
+                        'game_id' => $key,
+                        'node_id' => $lot[0],
+                    );
+
+                    $string = http_build_query($array);
+
+                    foreach ($lot as $item) {
+                        $string .= "&node_ids%5B%5D=".$item;
+                    }
+
+                    request::xhr("lots/raise", $string, run::$runner->user->session);
+                }
                 run::$runner->events->fireEvent(\event::lotRise);
             } catch (Exception $e) {
                 //We don't need anything here
@@ -156,11 +172,11 @@ class user {
         return true;
     }
 
-    private function defineOffersToRise():void {
+    #[NoReturn] private function defineOffersToRise():void {
         $userPage = request::basic("users/".$this->ID."/", $this->session);
         $parser = new parser($userPage);
         $offers = $parser->getByClassname("offer-list-title-button");
-        $offerNow = $offers->length - 1;
+        $offerNow = 0;
 
         while ($offers->length - 1 >= $offerNow) {
             $lotID = explode("/", $offers->item($offerNow)->childNodes->item(1)->attributes->item(0)->textContent)[4];
@@ -183,6 +199,17 @@ class user {
 
             $offerNow++;
         }
+
+        $finished = array();
+        foreach ($this->lots as $lot) {
+            if (!isset($finished[$lot["game"]])) {
+                $finished[$lot["game"]] = array();
+            }
+
+            array_unshift($finished[$lot["game"]], $lot["lot"]);
+        }
+
+        $this->lots = $finished;
 
         $this->isLotsDefined = true;
     }
