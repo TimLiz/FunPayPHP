@@ -1,7 +1,7 @@
 <?php
 /**
  * Hello my friend! Welcome to my code. I hope you like it. Good luck!
- * I did not put a lot of comments here, but i added a lot of PHPDOC.
+ * I did not put a lot of comments here, but I added a lot of PHPDOC.
  * As you can see, everything in English here, because i sure, only programmers will read that.
  * Sure, they knew English.
  *
@@ -13,8 +13,7 @@ namespace run;
 use event;
 use Exception;
 
-require_once(__DIR__."/events.php");
-require_once(__DIR__."/event.php");
+require_once(__DIR__ . "/events.php");
 require_once(__DIR__."/aliases.php");
 require_once(__DIR__."/user.php");
 require_once(__DIR__."/api/request.php");
@@ -26,7 +25,10 @@ require_once(__DIR__."/repository/watching.php");
 require_once(__DIR__."/repository/payment.php");
 require_once(__DIR__."/builders/messageBuilder.php");
 require_once(__DIR__."/builders/lotBuilder.php");
+require_once(__DIR__ . "/enums/event.php");
 require_once(__DIR__."/timer.php");
+
+
 
 class run extends aliases {
     /**
@@ -118,7 +120,7 @@ class run extends aliases {
 
         while (true) {
             $this->timers->loop();
-            $this->events->fireEvent(event::loop);
+            $this->events->fireEvent(\event::loop);
         }
     }
 
@@ -130,7 +132,7 @@ class run extends aliases {
             if ($msg && $msg->author->answered) {
                 if ($msg->author->ID != $this->user->ID) {
                     $msg->author->answered = false;
-                    $this->events->fireEvent(event::message, $msg);
+                    $this->events->fireEvent(\event::message, $msg);
                     $msg->author->answered = true;
                 }
             }
@@ -140,7 +142,7 @@ class run extends aliases {
             $payment = paymentRepository::new();
 
             if ($payment) {
-                $this->events->fireEvent(event::payment, $payment);
+                $this->events->fireEvent(\event::payment, $payment);
             }
         }
 

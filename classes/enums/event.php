@@ -1,14 +1,14 @@
 <?php
-abstract class event {
+enum event {
     /**
      * Calls on message, sends messageRepository into listener
      */
-    const message = 1;
+    case message;
 
     /**
      * Calls on payment, sends paymentRepository into listener
      */
-    const payment = 2;
+    case payment;
 
     /**
      * Calls on you're messaged, sends messageRepository into listener
@@ -17,15 +17,15 @@ abstract class event {
      * @removed
      * @since 1.0.4.4
      */
-    const youreMessage = 3;
+    case youreMessage;
 
     /**
      * Calls on lot rise
      */
-    const lotRise = 4;
+    case lotRise;
 
     /**
      * Calls every loop interaction
      */
-    const loop = 5;
+    case loop;
 }
