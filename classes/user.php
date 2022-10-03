@@ -35,7 +35,7 @@ class user {
      */
     private array $lots = array();
     private bool $isLotsDefined = false;
-    private int $lastUpdate = 0;
+    private array $storage = array();
     /**
      * Updates every 10 minutes
      *
@@ -67,6 +67,7 @@ class user {
 
     public function __construct(array $settings, run $runner) {
         echo "Loading user...".PHP_EOL;
+
         $session = request::getSession();
         $application = request::getApplication($session);
 
@@ -86,6 +87,20 @@ class user {
         run::$runner->timers->addRepeated(600, function () {
             $this->update();
         });
+
+        if (!file_exists(__DIR__."/../temp/users")) {
+            mkdir(__DIR__."/../temp/users");
+        }
+
+        if (!file_exists(__DIR__."/../temp/users/".$this->ID.".FunUser")) {
+            file_put_contents(__DIR__."/../temp/users/".$this->ID.".FunUser", "");
+        } else {
+            $storage = json_decode(file_get_contents(__DIR__."/../temp/users/".$this->ID.".FunUser"), true);
+            if ($storage == null) {
+                $storage = array();
+            }
+            $this->storage = $storage;
+        }
     }
 
     /**
@@ -106,6 +121,38 @@ class user {
         }
 
         return false;
+    }
+
+
+    /**
+     * Writes data to user storage(safes on bot restart)
+     *
+     * @param string $key Key
+     * @param string|array $data Data to write
+     * @param bool $allowOverwrite Allow to overwrite
+     * @return bool True on success false on error
+     */
+    public function storageWrite(string $key, string|array $data, bool $allowOverwrite = false):bool {
+        if (isset($this->storage[$key]) && !$allowOverwrite) return false;
+        $this->storage[$key] = $data;
+
+        file_put_contents(__DIR__."/../temp/users/".$this->ID.".FunUser", json_encode($this->storage));
+
+        return true;
+    }
+
+    /**
+     * Removes data from storage
+     *
+     * @param string $key Key
+     * @return bool True on success false on error
+     */
+    public function storageRemove(string $key):bool {
+        unset($this->storage[$key]);
+
+        file_put_contents(__DIR__."/../temp/users/".$this->ID.".FunUser", json_encode($this->storage));
+
+        return true;
     }
 
     /**
