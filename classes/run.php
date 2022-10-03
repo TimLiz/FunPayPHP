@@ -36,6 +36,11 @@ class run extends aliases {
      */
     const SETTINGS_DISABLE_MESSAGE_CHECK = 1;
 
+    /**
+     * @var int SETTINGS_DISABLE_LOT_RISE Should bot not rising offers
+     */
+    const SETTINGS_DISABLE_LOT_RISE = 2;
+
     public events $events;
     public user $user;
     public message $message;
@@ -47,7 +52,6 @@ class run extends aliases {
      * @var string The golden key
      */
     static public string $goldenKey;
-
     public static run $runner;
 
     /**
@@ -72,6 +76,7 @@ class run extends aliases {
         $config = json_decode(file_get_contents(__DIR__."/../config.json"), true);
 
         self::$goldenKey = $config["key"];
+        self::$runner = $this;
 
         //Creating folder for temp files
         if (!file_exists(__DIR__."/../temp")) {
@@ -85,11 +90,10 @@ class run extends aliases {
             mkdir(__DIR__."/../temp/payments");
         }
 
+        $this->timers = new timer();
         $this->events = new events($this);
         $this->user = new user($settings, $this);
         $this->message = new message($this);
-        $this->timers = new timer();
-        self::$runner = $this;
         $this->users = array();
     }
 
@@ -118,9 +122,16 @@ class run extends aliases {
             $this->loop();
         }, false);
 
+        if (!isset($this->user->settings[self::SETTINGS_DISABLE_LOT_RISE]) || !$this->user->settings[self::SETTINGS_DISABLE_LOT_RISE]) {
+            $this->user->rise();
+            $this->timers->addRepeated(300, function () {
+                $this->user->rise();
+            });
+        }
+
         while (true) {
             $this->timers->loop();
-            $this->events->fireEvent(\event::loop);
+            $this->events->fireEvent(event::loop);
         }
     }
 
@@ -132,7 +143,7 @@ class run extends aliases {
             if ($msg && $msg->author->answered) {
                 if ($msg->author->ID != $this->user->ID) {
                     $msg->author->answered = false;
-                    $this->events->fireEvent(\event::message, $msg);
+                    $this->events->fireEvent(event::message, $msg);
                     $msg->author->answered = true;
                 }
             }
@@ -142,10 +153,8 @@ class run extends aliases {
             $payment = paymentRepository::new();
 
             if ($payment) {
-                $this->events->fireEvent(\event::payment, $payment);
+                $this->events->fireEvent(event::payment, $payment);
             }
         }
-
-        $this->user->rise();
     }
 }

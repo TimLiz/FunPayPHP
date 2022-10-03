@@ -56,7 +56,7 @@ class userRepository {
      * Sends message
      *
      * @param messageBuilder $msg Msg to send
-     * @return bool True if sucess
+     * @return bool True if success
      * @throws Exception
      */
     public function sendMessage(messageBuilder $msg):bool {

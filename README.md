@@ -84,9 +84,26 @@ $FunPay->on(event::loop, function () {
 });
 ```
 
+## Настройки
+Если вы хотите, вы можете поменять некоторые настройки,
+укажите как массив как первый аргумент для конструктора класса run
+
+```php
+$FunPay = new run(array(
+    run::SETTINGS_DISABLE_LOT_RISE => false,
+    run::SETTINGS_DISABLE_MESSAGE_CHECK => false
+));
+```
+
+#### Отключить обработку сообщений
+`run::SETTINGS_DISABLE_MESSAGE_CHECK`
+
+#### Отключить поднятие лотов
+`SETTINGS_DISABLE_LOT_RISE`
+
 ### Примечание
 Авто поднятие и всегда онлайн работают,
-Остальные события вы можете найти в файле events.php
-По любым вопросам можете писать в дс TimLiz#2952 или создавать issue
+Остальные события вы можете найти в файле enums/event.php
+По любым вопросам можете писать в Discord(TimLiz#2952) или создавать issue
 
 **Удачи всем**

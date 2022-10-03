@@ -30,13 +30,11 @@ class user {
      * @var array Settings
      */
     public readonly array $settings;
-    private readonly run $runner;
     /**
      * @var array Lots
      */
     private array $lots = array();
     private bool $isLotsDefined = false;
-    private int $lotsLastRise = 0;
     private int $lastUpdate = 0;
     /**
      * Updates every 10 minutes
@@ -73,7 +71,6 @@ class user {
         $application = request::getApplication($session);
 
         $this->settings = $settings;
-        $this->runner = $runner;
         $this->csrf = $application["csrf-token"];
         $this->session = $session;
         $this->lang = $application["locale"];
@@ -84,6 +81,11 @@ class user {
         ];
 
         $this->update();
+
+        //Updating
+        run::$runner->timers->addRepeated(600, function () {
+            $this->update();
+        });
     }
 
     /**
@@ -110,38 +112,30 @@ class user {
      * @return bool True on success, False on error/timer still waiting
      */
     public function update(): bool {
-        if (time() - $this->lastUpdate > 600) {
-            $settingsPage = request::basic(substr($this->url, 19), $this->session);
-            try {
-                $parser = new parser($settingsPage);
-                //Getting money with ₽
-                @$money = $parser->getByClassname("badge-balance")->item(0)->textContent;
-                if ($money == null) $money = "0₽";
-                $this->moneyRaw = $money;
+        $settingsPage = request::basic(substr($this->url, 19), $this->session);
+        try {
+            $parser = new parser($settingsPage);
+            //Getting money with ₽
+            @$money = $parser->getByClassname("badge-balance")->item(0)->textContent;
+            if ($money == null) $money = "0₽";
+            $this->moneyRaw = $money;
 
-                //Getting money without ₽
-                $this->money = trim($this->moneyRaw, "₽");
+            //Getting money without ₽
+            $this->money = trim($this->moneyRaw, "₽");
 
-                //Getting raw rating
-                $this->ratingRaw = $parser->getByClassname("rating-full-count")->item(0)->textContent;
+            //Getting raw rating
+            $this->ratingRaw = $parser->getByClassname("rating-full-count")->item(0)->textContent;
 
-                //Getting formatted rating
-                $this->rating = explode(" ", $this->ratingRaw)[1];
+            //Getting formatted rating
+            $this->rating = explode(" ", $this->ratingRaw)[1];
 
-                return true;
-            } catch (Exception $e) {
-                return false;
-            }
-        } else {
+            return true;
+        } catch (Exception $e) {
             return false;
         }
     }
 
     public function rise():bool {
-        if (time() - $this->lotsLastRise < 300) {
-            return false;
-        }
-
         if (!$this->isLotsDefined) {
             $this->defineOffersToRise();
         }
@@ -169,8 +163,6 @@ class user {
                 //We don't need anything here
             }
         }
-
-        $this->lotsLastRise = time();
         return true;
     }
 
