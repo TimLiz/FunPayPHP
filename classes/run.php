@@ -132,8 +132,6 @@ class run extends aliases {
                     $msg->author->answered = false;
                     $this->events->fireEvent(event::message, $msg);
                     $msg->author->answered = true;
-                } else {
-                    $this->events->fireEvent(event::youreMessage, $msg);
                 }
             }
         }

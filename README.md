@@ -70,14 +70,6 @@ $FunPay->on(event::payment, function (\run\paymentRepository $payment) {
 });
 ```
 
-#### Ваше сообщение
-**Внимание: _Это событие не надёжно, не советую его использовать!_**
-```php
-$FunPay->on(event::youreMessage, function (\run\messageRepository $msg) {
-   //Код, исполняющийся при событии
-});
-```
-
 #### Поднятие лота
 ```php
 $FunPay->on(event::lotRise, function () {

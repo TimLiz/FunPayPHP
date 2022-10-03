@@ -33,9 +33,6 @@ class events {
             case event::payment:
                 array_unshift($this->onPayment, $function);
                 break;
-            case event::youreMessage:
-                array_unshift($this->onYoureMessage, $function);
-                break;
             case event::lotRise:
                 array_unshift($this->onLotRise, $function);
                 break;
@@ -55,11 +52,6 @@ class events {
                 break;
             case event::payment:
                 foreach ($this->onPayment as $item) {
-                    call_user_func($item, ...$args);
-                }
-                break;
-            case event::youreMessage:
-                foreach ($this->onYoureMessage as $item) {
                     call_user_func($item, ...$args);
                 }
                 break;
