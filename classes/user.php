@@ -115,7 +115,9 @@ class user {
             try {
                 $parser = new parser($settingsPage);
                 //Getting money with ₽
-                $this->moneyRaw = $parser->getByClassname("badge-balance")->item(0)->textContent;
+                $money = $parser->getByClassname("badge-balance")->item(0)->textContent;
+                if ($money == null) $money = "0₽";
+                $this->moneyRaw = $money;
 
                 //Getting money without ₽
                 $this->money = trim($this->moneyRaw, "₽");
