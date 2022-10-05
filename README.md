@@ -95,8 +95,8 @@ paymentRepository & userRepository
 
 ```php
 $FunPay = new run(array(
-    run::SETTINGS_DISABLE_LOT_RISE => false,
-    run::SETTINGS_DISABLE_MESSAGE_CHECK => false
+    run::SETTINGS_DISABLE_LOT_RISE => true,
+    run::SETTINGS_DISABLE_MESSAGE_CHECK => true
 ));
 ```
 
