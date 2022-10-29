@@ -132,6 +132,7 @@ class run extends aliases {
         while (true) {
             $this->timers->loop();
             $this->events->fireEvent(event::loop);
+            sleep(1);
         }
     }
 
