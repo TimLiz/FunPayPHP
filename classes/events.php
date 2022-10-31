@@ -10,6 +10,7 @@ class events {
     private array $onPayment = array();
     private array $onLotRise = array();
     private array $onLoop = array();
+    private array $onReady = array();
 
     public function __construct($parent) {
         echo "Loading events...".PHP_EOL;
@@ -35,6 +36,9 @@ class events {
             case event::loop:
                 array_unshift($this->onLoop, $function);
                 break;
+            case event::ready:
+                array_unshift($this->onReady, $function);
+                break;
             default:
         }
     }
@@ -58,6 +62,11 @@ class events {
                 break;
             case event::loop:
                 foreach ($this->onLoop as $item) {
+                    call_user_func($item, ...$args);
+                }
+                break;
+            case event::ready:
+                foreach ($this->onReady as $item) {
                     call_user_func($item, ...$args);
                 }
                 break;

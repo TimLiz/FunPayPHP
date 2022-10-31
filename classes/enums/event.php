@@ -28,4 +28,9 @@ enum event {
      * Calls every loop interaction
      */
     case loop;
+
+    /**
+     * Calls on bot ready
+     */
+    case ready;
 }

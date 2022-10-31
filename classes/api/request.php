@@ -4,20 +4,24 @@ namespace run;
 
 use Exception;
 
-abstract class request {
+abstract class request
+{
     /**
      * @throws Exception
      */
-    static public function xhr(string $api, string $data, string $session, bool $return = false): bool|array {
+    static public function xhr(string $api, string $data = null, string $session = null, bool $return = false, bool $post = true): bool|array
+    {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://funpay.com/'.$api);
+        curl_setopt($ch, CURLOPT_URL, 'https://funpay.com/' . $api);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_POST, $post);
+        if ($post) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'accept: application/json, text/javascript, */*; q=0.01',
             'content-type: application/x-www-form-urlencoded; charset=UTF-8',
-            'cookie: golden_key='.run::$goldenKey.'; PHPSESSID='.$session,
+            'cookie: golden_key=' . run::$goldenKey . '; PHPSESSID=' . $session,
             'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
             'x-requested-with: XMLHttpRequest'
         ));
@@ -30,7 +34,7 @@ abstract class request {
 
         if (isset($answer["error"]) && $answer["error"]) {
             $error = $answer["msg"] ?? $answer["error"];
-            throw new Exception($error);
+            throw new Exception("FunPay error: " . $error);
         }
         if ($return) {
             return $answer;

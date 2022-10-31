@@ -16,7 +16,7 @@ class parser {
 
     public function __construct(string $html) {
         $this->html = new DOMDocument();
-        @$this->html->loadHTML($html);
+        @$this->html->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'utf-8'));
         $this->finder = new DOMXPath($this->html);
         @$this->body = $this->html->getElementsByTagName("body")->item(0);
         @$this->head = $this->html->getElementsByTagName("head")->item(0);
@@ -31,7 +31,7 @@ class parser {
      * @return DOMNodeList|DOMElement
      */
     public function getByAttribute(string $name, string $value, bool $returnFirst = true): DOMNodeList|DOMElement {
-        return($this->finder->query("//*[contains(@".$name.", '$value')]"));
+        return ($this->finder->query(sprintf("//*[contains(@%s, '$value')]", $name)));
     }
 
 

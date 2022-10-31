@@ -78,8 +78,17 @@ $FunPay->on(event::lotRise, function () {
 ```
 
 #### Главный цикл
+
 ```php
 $FunPay->on(event::loop, function () {
+   //Код, исполняющийся при событии
+});
+````
+
+#### При готовности
+
+```php
+$FunPay->on(event::ready, function () {
    //Код, исполняющийся при событии
 });
 ```

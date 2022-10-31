@@ -14,20 +14,20 @@ use event;
 use Exception;
 
 require_once(__DIR__ . "/events.php");
-require_once(__DIR__."/aliases.php");
-require_once(__DIR__."/user.php");
-require_once(__DIR__."/api/request.php");
-require_once(__DIR__."/html/parser.php");
-require_once(__DIR__."/api/message.php");
-require_once(__DIR__."/repository/message.php");
-require_once(__DIR__."/repository/user.php");
-require_once(__DIR__."/repository/watching.php");
-require_once(__DIR__."/repository/payment.php");
-require_once(__DIR__."/builders/messageBuilder.php");
-require_once(__DIR__."/builders/lotBuilder.php");
+require_once(__DIR__ . "/aliases.php");
+require_once(__DIR__ . "/user.php");
+require_once(__DIR__ . "/api/request.php");
+require_once(__DIR__ . "/html/parser.php");
+require_once(__DIR__ . "/api/message.php");
+require_once(__DIR__ . "/repository/message.php");
+require_once(__DIR__ . "/repository/user.php");
+require_once(__DIR__ . "/repository/watching.php");
+require_once(__DIR__ . "/repository/lot.php");
+require_once(__DIR__ . "/repository/payment.php");
+require_once(__DIR__ . "/builders/messageBuilder.php");
+require_once(__DIR__ . "/builders/lotBuilder.php");
 require_once(__DIR__ . "/enums/event.php");
-require_once(__DIR__."/timer.php");
-
+require_once(__DIR__ . "/timer.php");
 
 
 class run extends aliases
@@ -139,6 +139,8 @@ class run extends aliases
                 $this->user->rise();
             });
         }
+
+        $this->events->fireEvent(event::ready);
 
         while (!$this->customLoop) {
             $this->timers->loop();
