@@ -30,7 +30,8 @@ require_once(__DIR__."/timer.php");
 
 
 
-class run extends aliases {
+class run extends aliases
+{
     /**
      * @var int SETTINGS_DISABLE_MESSAGE_CHECK Should bot stop reading messages
      */
@@ -41,12 +42,18 @@ class run extends aliases {
      */
     const SETTINGS_DISABLE_LOT_RISE = 2;
 
+    /**
+     * @var int SETTINGS_CUSTOM_LOOP Disables while true built in loop, you need to call tick() manually
+     */
+    const SETTINGS_CUSTOM_LOOP = 3;
+
     public events $events;
     public user $user;
     public message $message;
     public timer $timers;
     public array $users;
     public bool $isReady = false;
+    public bool $customLoop = false;
 
     /**
      * @var string The golden key
@@ -79,15 +86,15 @@ class run extends aliases {
         self::$runner = $this;
 
         //Creating folder for temp files
-        if (!file_exists(__DIR__."/../temp")) {
-            echo "Creating temp folder...".PHP_EOL;
-            mkdir(__DIR__."/../temp");
+        if (!file_exists(__DIR__ . "/../temp")) {
+            echo "Creating temp folder..." . PHP_EOL;
+            mkdir(__DIR__ . "/../temp");
         }
 
         //Folder for orders temp files
-        if (!file_exists(__DIR__."/../temp/payments")) {
-            echo "Checking payments...".PHP_EOL;
-            mkdir(__DIR__."/../temp/payments");
+        if (!file_exists(__DIR__ . "/../temp/payments")) {
+            echo "Checking payments..." . PHP_EOL;
+            mkdir(__DIR__ . "/../temp/payments");
         }
 
         $this->timers = new timer();
@@ -95,6 +102,10 @@ class run extends aliases {
         $this->user = new user($settings, $this);
         $this->message = new message($this);
         $this->users = array();
+
+        if (isset($this->user->settings[self::SETTINGS_CUSTOM_LOOP]) && $this->user->settings[self::SETTINGS_CUSTOM_LOOP]) {
+            $this->customLoop = true;
+        }
     }
 
     /**
@@ -129,14 +140,20 @@ class run extends aliases {
             });
         }
 
-        while (true) {
+        while (!$this->customLoop) {
             $this->timers->loop();
-            $this->events->fireEvent(event::loop);
             sleep(1);
         }
     }
 
-    private function loop() {
+    /**
+     * Main loop function, call it if u enabled custom loop setting
+     *
+     * @return void
+     */
+    public function loop(): void
+    {
+        $this->events->fireEvent(event::loop);
         $this->isReady = true;
 
         if (!isset($this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) || !$this->user->settings[self::SETTINGS_DISABLE_MESSAGE_CHECK]) {
