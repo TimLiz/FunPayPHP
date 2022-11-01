@@ -43,12 +43,18 @@ class paymentRepository {
      */
     public string $gameCategory;
     /**
-     * @var string payment page URL
+     * @var string Payment page URL
      */
     public string $paymentURL;
+    /**
+     * @var lot|null Lot object
+     */
+    public lot|null $lotObject;
 
     public userRepository $user;
-    public function __construct(DOMNode $payment) {
+
+    public function __construct(DOMNode $payment)
+    {
         $this->ID = $payment->childNodes->item(3)->textContent;
         $this->nameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
         $this->underNameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
@@ -76,7 +82,9 @@ class paymentRepository {
             $this->user = run::$runner->users[$this->ID];
         }
 
-        file_put_contents(__DIR__."/../../temp/payments/".$this->ID.".FunPayment", "");
+        $this->lotObject = run::$runner->user->getLotByName($this->name);
+
+        file_put_contents(__DIR__ . "/../../temp/payments/" . $this->ID . ".FunPayment", "");
     }
 
     /**

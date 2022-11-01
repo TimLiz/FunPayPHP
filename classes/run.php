@@ -47,6 +47,11 @@ class run extends aliases
      */
     const SETTINGS_CUSTOM_LOOP = 3;
 
+    /**
+     * @var int SETTINGS_DO_NOT_CLEAR_CONSOLE Disables console clean-up(stops cleaning logs like "Loading user...") on Ready
+     */
+    const SETTINGS_DO_NOT_CLEAR_CONSOLE = 4;
+
     public events $events;
     public user $user;
     public message $message;
@@ -95,11 +100,14 @@ class run extends aliases
         if (!file_exists(__DIR__ . "/../temp/payments")) {
             echo "Checking payments..." . PHP_EOL;
             mkdir(__DIR__ . "/../temp/payments");
+            file_put_contents(__DIR__ . "/../temp/payments/IMPORTANT.README", "Files in this folder " .
+                "are used to indent payment, and avoid duplicate event fire, i do not recommend to delete anything " .
+                "here, to avoid double event fire");
         }
 
         $this->timers = new timer();
         $this->events = new events($this);
-        $this->user = new user($settings, $this);
+        $this->user = new user($settings);
         $this->message = new message($this);
         $this->users = array();
 
@@ -125,9 +133,19 @@ class run extends aliases
         return $return;
     }
 
-    public function run() {
-        echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
-        echo "Ready!".PHP_EOL;
+    public function run()
+    {
+        if (isset($this->user->settings[self::SETTINGS_DO_NOT_CLEAR_CONSOLE])) {
+            if (!$this->user->settings[self::SETTINGS_DO_NOT_CLEAR_CONSOLE]) {
+                echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
+            } else {
+                echo "Console clean-up turned off!" . PHP_EOL;
+            }
+        } else {
+            echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
+        }
+
+        echo "Ready!" . PHP_EOL;
 
         $this->timers->addRepeated(3, function () {
             $this->loop();

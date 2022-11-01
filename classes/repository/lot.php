@@ -22,6 +22,10 @@ class lot
     public string $location = "trade";
 
     /**
+     * Returns lot repository
+     *
+     * @param int $lotId Lot id
+     * @return lot Lot repository
      * @throws Exception On error
      */
     static function getLot(int $lotId): lot

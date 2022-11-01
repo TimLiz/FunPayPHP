@@ -2,10 +2,13 @@
 
 namespace run;
 
+use DOMElement;
+use event;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
 
-class user {
+class user
+{
     /**
      * @var string CSRF token(sometimes used for requests)
      */
@@ -64,9 +67,16 @@ class user {
      * @var int Formatted rating(ex: 128)
      */
     public int $rating;
+    /**
+     * Name to lot id
+     *
+     * @var array
+     */
+    private array $nameToLotId;
 
-    public function __construct(array $settings, run $runner) {
-        echo "Loading user...".PHP_EOL;
+    public function __construct(array $settings)
+    {
+        echo "Loading user..." . PHP_EOL;
 
         $session = request::getSession();
         $application = request::getApplication($session);
@@ -76,7 +86,7 @@ class user {
         $this->session = $session;
         $this->lang = $application["locale"];
         $this->ID = $application["userId"];
-        $this->url = "https://funpay.com/users/".$this->ID."/";
+        $this->url = "https://funpay.com/users/" . $this->ID . "/";
         @$this->webpush = [
             "app" => $application["webpush"]["app"]
         ];
@@ -88,23 +98,26 @@ class user {
             $this->update();
         });
 
-        if (!file_exists(__DIR__."/../temp/users")) {
-            mkdir(__DIR__."/../temp/users");
+        if (!file_exists(__DIR__ . "/../temp/users")) {
+            mkdir(__DIR__ . "/../temp/users");
         }
 
-        if (!file_exists(__DIR__."/../temp/users/".$this->ID.".FunUser")) {
-            file_put_contents(__DIR__."/../temp/users/".$this->ID.".FunUser", "");
+        if (!file_exists(__DIR__ . "/../temp/users/" . $this->ID . ".FunUser")) {
+            file_put_contents(__DIR__ . "/../temp/users/" . $this->ID . ".FunUser", "");
         } else {
-            $storage = json_decode(file_get_contents(__DIR__."/../temp/users/".$this->ID.".FunUser"), true);
+            $storage = json_decode(file_get_contents(__DIR__ . "/../temp/users/" . $this->ID . ".FunUser"), true);
             if ($storage == null) {
                 $storage = array();
             }
             $this->storage = $storage;
         }
+
+        $this->loadLots();
     }
 
     /**
      * Checks for orders
+     * Checks only is mark > 0, you need to check more data also
      *
      * @return bool True on order and false if no orders / error
      */
@@ -116,7 +129,7 @@ class user {
                 return true;
             }
 
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
 
@@ -171,13 +184,13 @@ class user {
             $this->money = trim($this->moneyRaw, "₽");
 
             //Getting raw rating
-            $this->ratingRaw = $parser->getByClassname("rating-full-count")->item(0)->textContent;
+            @$this->ratingRaw = $parser->getByClassname("rating-full-count")->item(0)->textContent;
 
             //Getting formatted rating
-            $this->rating = explode(" ", $this->ratingRaw)[1];
+            @$this->rating = explode(" ", $this->ratingRaw)[1];
 
             return true;
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -200,28 +213,32 @@ class user {
                     $string = http_build_query($array);
 
                     foreach ($lot as $item) {
-                        $string .= "&node_ids%5B%5D=".$item;
+                        $string .= "&node_ids%5B%5D=" . $item;
                     }
 
                     request::xhr("lots/raise", $string, run::$runner->user->session);
                 }
-                run::$runner->events->fireEvent(\event::lotRise);
-            } catch (Exception $e) {
+                run::$runner->events->fireEvent(event::lotRise);
+            } catch (Exception) {
                 //We don't need anything here
             }
         }
         return true;
     }
 
-    #[NoReturn] private function defineOffersToRise():void {
-        $userPage = request::basic("users/".$this->ID."/", $this->session);
+    /**
+     * @TODO Make lot rise compatible with loadLots()
+     */
+    #[NoReturn] private function defineOffersToRise(): void
+    {
+        $userPage = request::basic("users/" . $this->ID . "/", $this->session);
         $parser = new parser($userPage);
         $offers = $parser->getByClassname("offer-list-title-button");
         $offerNow = 0;
 
         while ($offers->length - 1 >= $offerNow) {
             $lotID = explode("/", $offers->item($offerNow)->childNodes->item(1)->attributes->item(0)->textContent)[4];
-            $lotPage = request::basic("lots/".$lotID."/trade", $this->session);
+            $lotPage = request::basic("lots/" . $lotID . "/trade", $this->session);
             $parser = new parser($lotPage);
             $data = $parser->getByClassname("js-lot-raise");
             if ($data->length == 0) {
@@ -253,5 +270,35 @@ class user {
         $this->lots = $finished;
 
         $this->isLotsDefined = true;
+    }
+
+    public function getLotByName(string $name): lot|null
+    {
+        if (isset($this->nameToLotId[$name])) {
+            return lot::getLot($this->nameToLotId[$name]);
+        }
+
+        return null;
+    }
+
+    private function loadLots(): void
+    {
+        $profile = request::basic(sprintf("users/%d/", $this->ID), $this->session);
+        $parser = new parser($profile);
+        $lots = $parser->getByClassname("tc-item");
+        $iterator = $lots->getIterator();
+
+        /**
+         * @var DOMElement $current
+         */
+        while ($current = $iterator->current()) {
+            $link = $current->getAttribute("href");
+            $id = explode("=", explode("?", explode("/", $link)[4])[1])[1] . PHP_EOL;
+            $name = explode(", ", $current->childNodes->item(1)->childNodes->item(1)->textContent)[0];
+
+            $this->nameToLotId[$name] = $id;
+
+            $iterator->next();
+        }
     }
 }

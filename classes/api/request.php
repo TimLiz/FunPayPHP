@@ -27,9 +27,10 @@ abstract class request
         ));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $answer = json_decode(curl_exec($ch), true);
+        $answerRaw = curl_exec($ch);
+        $answer = json_decode($answerRaw, true);
         if ($answer == null) {
-            throw new Exception("XHR parse error...");
+            throw new Exception("XHR parse error... Request was to " . $api . "          |       Answer got: " . $answerRaw);
         }
 
         if (isset($answer["error"]) && $answer["error"]) {

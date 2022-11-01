@@ -129,6 +129,33 @@ while (true) {
 }
 ```
 
+## Редактирование лотов
+
+```php
+<?php
+require_once('vendor/autoload.php');
+
+use run\lot;
+use run\run;
+
+//Инициируем бота
+$FunPay = new run();
+
+//Прослушиваем событие ready
+$FunPay->on(event::ready, function () use ($FunPay) {
+    //Получаем лот с id 13914382
+    $lot = lot::getLot(13914382);
+    
+    //Ставим кол-во 10
+    $lot->amount = 10;
+    
+    //Сохранение лота(отправка на сервер)
+    $lot->save();
+});
+
+$FunPay->run();
+```
+
 ## Настройки
 
 Если вы хотите, вы можете поменять некоторые настройки,
