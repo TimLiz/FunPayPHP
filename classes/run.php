@@ -167,11 +167,11 @@ class run extends aliases
     }
 
     /**
-     * Main loop function, call it if u enabled custom loop setting
+     * Main loop function
      *
      * @return void
      */
-    public function loop(): void
+    private function loop(): void
     {
         $this->events->fireEvent(event::loop);
         $this->isReady = true;

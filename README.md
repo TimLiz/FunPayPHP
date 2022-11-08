@@ -125,7 +125,7 @@ $FunPay->run();
 //В моём примере я просто использую свой бесконечный цикл
 
 while (true) {
-    $FunPay->loop();
+    $FunPay->timers->loop();
 }
 ```
 
@@ -176,7 +176,7 @@ $FunPay = new run(array(
 
 `run::SETTINGS_DISABLE_LOT_RISE`
 
-#### Отключить бесконечный цикл, вам прийдётся вызывать функцию loop() класса runner вручную"
+#### Отключить бесконечный цикл, вам прийдётся вызывать функцию loop() вручную см выше"
 
 `run::SETTINGS_CUSTOM_LOOP`
 
