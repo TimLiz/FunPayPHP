@@ -55,26 +55,26 @@ class paymentRepository {
 
     public function __construct(DOMNode $payment)
     {
-        $this->ID = $payment->childNodes->item(3)->textContent;
-        $this->nameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
-        $this->underNameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
-        $this->paymentURL = $payment->attributes->item(0)->textContent;
+        @$this->ID = $payment->childNodes->item(3)->textContent;
+        @$this->nameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
+        @$this->underNameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
+        @$this->paymentURL = $payment->attributes->item(0)->textContent;
 
-        $nameRawExploded = explode(", ", $this->nameRaw);
-        $this->name = $nameRawExploded[0];
-        $this->category = $nameRawExploded[1];
+        @$nameRawExploded = explode(", ", $this->nameRaw);
+        @$this->name = $nameRawExploded[0];
+        @$this->category = $nameRawExploded[1];
         @$this->amount = $nameRawExploded[2];
         @$this->username = $nameRawExploded[3];
 
-        $underNameExploded = explode(", ", $this->underNameRaw);
-        $this->game = $underNameExploded[0];
-        $this->gameCategory = $underNameExploded[0];
+        @$underNameExploded = explode(", ", $this->underNameRaw);
+        @$this->game = $underNameExploded[0];
+        @$this->gameCategory = $underNameExploded[0];
 
-        $userRaw = $payment->childNodes->item(7)->childNodes->item(1);
-        $userRaw = $userRaw->childNodes->item(3)->childNodes->item(1)->childNodes->item(1);
-        $link = $userRaw->attributes->item(2)->textContent;
+        @$userRaw = $payment->childNodes->item(7)->childNodes->item(1);
+        @$userRaw = $userRaw->childNodes->item(3)->childNodes->item(1)->childNodes->item(1);
+        @$link = $userRaw->attributes->item(2)->textContent;
 
-        $ID = explode("/", $link)[4];
+        @$ID = explode("/", $link)[4];
 
         if (!isset(run::$runner->users[$this->ID])) {
             $this->user = new userRepository($ID, run::$runner);
