@@ -19,9 +19,11 @@ class paymentRepository {
      */
     public string $name;
     /**
-     * @var string $category Category of payment(ex: Предметы) Tip: This won't work if you're using ", " in you're item name, be carefully!
+     * @var string|null $category Category of payment(ex: Предметы) Tip: This won't work if you're using ", " in you're item name, be carefully!
+     * Null in some categories, sadly, I can't fix it, but you are able to use nameRaw and underNameRaw to parse this data for ur game
+     * Also, you are welcome if you want to contribute and add ur game to this API, create pull request. Thank you.
      */
-    public string $category;
+    public string|null $category;
     /**
      * @var string|null $amount Amount items paid for(ex: 2 шт) Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
