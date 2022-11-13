@@ -2,6 +2,7 @@
 
 namespace run;
 
+use DOMElement;
 use DOMNode;
 use Exception;
 
@@ -50,6 +51,7 @@ class paymentRepository {
     public string $paymentURL;
     /**
      * @var lot|null Lot object
+     * Might be null, but has better performance. Use getObject() method for 100% work
      */
     public lot|null $lotObject;
 
@@ -87,6 +89,56 @@ class paymentRepository {
         $this->lotObject = run::$runner->user->getLotByName($this->name);
 
         file_put_contents(__DIR__ . "/../../temp/payments/" . $this->ID . ".FunPayment", "");
+    }
+
+    /**
+     * Gets lot
+     *
+     * @return lot|null Lot object, null rarely
+     * @throws Exception On error
+     */
+    function getLotObject():lot|null {
+        $data = request::basic("orders/".substr($this->ID, 1)."/", run::$runner->user->session);
+        $parser = new parser($data);
+        $all = $parser->getByClassname("param-item");
+        $iterator = $all->getIterator();
+
+        /**
+         * @var DOMElement $current
+         */
+        while ($current = $iterator->current()) {
+            $h5 = $current->getElementsByTagName("h5");
+
+            $type = $h5->item(0)->textContent;
+
+            if ($type == "Категория") {
+                $link = $current->getElementsByTagName("div")->item(0)->childNodes->item(0)->attributes->getNamedItem("href")->textContent;
+                $node = explode("/", $link)[4];
+                $data = request::basic("lots/".$node."/trade", run::$runner->user->session);
+                $parser = new parser($data);
+                $lots = $parser->getByClassname("tc-desc-text");
+
+                $iterator = $lots->getIterator();
+
+                /**
+                 * @var DOMElement $current
+                 */
+                while ($current = $iterator->current()) {
+                    if ($current->textContent == $this->name) {
+                        $div = $current->parentNode->parentNode;
+
+                        $ID = $div->attributes->getNamedItem("data-offer")->textContent;
+                        return lot::getLot($ID);
+                    }
+
+                    $iterator->next();
+                }
+            }
+
+            $iterator->next();
+        }
+
+        return null;
     }
 
     /**
