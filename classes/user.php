@@ -58,15 +58,17 @@ class user
     /**
      * Updates every 10 minutes
      *
-     * @var string Money in raw view(ex: Всего 131 отзыв)
+     * @var string|null Money in raw view(ex: Всего 131 отзыв)
+     * P.S null if no lots defined
      */
-    public string $ratingRaw;
+    public string|null $ratingRaw;
     /**
      * Updates every 10 minutes
      *
-     * @var int Formatted rating(ex: 128)
+     * @var int|null Formatted rating(ex: 128)
+     * P.S null if not lots defined
      */
-    public int $rating;
+    public int|null $rating;
     /**
      * Name to lot id
      *
