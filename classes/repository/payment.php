@@ -124,7 +124,7 @@ class paymentRepository {
                  * @var DOMElement $current
                  */
                 while ($current = $iterator->current()) {
-                    if ($current->textContent == $this->name) {
+                    if (str_contains($current->textContent,$this->name)) {
                         $div = $current->parentNode->parentNode;
 
                         $ID = $div->attributes->getNamedItem("data-offer")->textContent;
