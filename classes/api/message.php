@@ -30,8 +30,6 @@ class message {
         //IDK why, do not ask me
         $answer = request::xhr("runner/", 'objects=[{"type":"chat_bookmarks","id":"'.run::$runner->user->ID.'","data":false}]&request={"action":"chat_message","data":{"node":"'.$node.'","content":"'.$message->content.'"}}&csrf_token='.run::$runner->user->csrf, run::$runner->user->session, true);
 
-        print_r($answer);
-
         if (isset($answer["msg"]) && $answer["error"]) {
             throw new Exception("Message send error: ".$answer["msg"]);
         }
