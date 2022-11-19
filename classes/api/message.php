@@ -20,7 +20,17 @@ class message {
      * @throws Exception On error
      */
     public function send(messageBuilder $message, int $id):bool|null {
-        $answer = request::xhr("runner/", 'request=%7B%22action%22%3A%22chat_message%22%2C%22data%22%3A%7B%22node%22%3A%22users-'.$this->parent->user->ID.'-'.$id.'%22%2C%22last_message%22%3A1%2C%22content%22%3A%22'.$message->content.'%22%7D%7D&csrf_token='.run::$runner->user->csrf, run::$runner->user->session, true);
+        if (run::$runner->user->ID < $id) {
+            $node = "users-".run::$runner->user->ID."-".$id;
+        } else {
+            $node = "users-".$id."-".run::$runner->user->ID;
+        }
+
+        //We need to require chat_bookmarks here, because FunPay needs it to send messages to account with reviews, without reviews - no,
+        //IDK why, do not ask me
+        $answer = request::xhr("runner/", 'objects=[{"type":"chat_bookmarks","id":"'.run::$runner->user->ID.'","data":false}]&request={"action":"chat_message","data":{"node":"'.$node.'","content":"'.$message->content.'"}}&csrf_token='.run::$runner->user->csrf, run::$runner->user->session, true);
+
+        print_r($answer);
 
         if (isset($answer["msg"]) && $answer["error"]) {
             throw new Exception("Message send error: ".$answer["msg"]);
@@ -41,7 +51,7 @@ class message {
             $html = $parser->getByClassname("contact-list");
 
             if ($response["objects"][0]["data"]["counter"] > 0) {
-                $msg = new messageRepository($html, $this->parent);
+                $msg = new messageRepository($html);
                 if ($msg->isMessage) {
                     return $msg;
                 } else {
