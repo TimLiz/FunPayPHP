@@ -6,24 +6,34 @@ use Exception;
 use messageBuilder\messageBuilder;
 
 class userRepository {
+    /**
+     * @var string Username
+     */
     public string $name;
+    /**
+     * @var int User ID
+     */
     public int $ID;
+    /**
+     * @var bool System var, do not change to avoid bugs
+     */
     public bool $answered = true;
-    public string $logo;
-    private run $runner;
+    /**
+     * @var string|null User avatar url, might be null on server error
+     */
+    public string|null $logo;
 
-    public function __construct(int $ID, run $runner) {
+    public function __construct(int $ID) {
         $this->ID = $ID;
-        $this->runner = $runner;
 
         $profile = request::basic("users/".$this->ID."/", run::$runner->user->session);
         $parser = new parser($profile);
 
-        $logo = $parser->getByClassname("avatar-photo")->item(0)->attributes->item(1)->textContent;
-        $logo = explode(": ", $logo)[1];
-        $logo = substr($logo, 4, -2);
+        @$logo = $parser->getByClassname("avatar-photo")->item(0)->attributes->item(1)->textContent;
+        @$logo = explode(": ", $logo)[1];
+        @$logo = substr($logo, 4, -2);
 
-        $this->name = $parser->getByClassname("mr4")->item(0)->textContent;
+        @$this->name = $parser->getByClassname("mr4")->item(0)->textContent;
 
         if ($logo == "/img/layout/avatar.png") {
             $logo = "https://funpay.com/img/layout/avatar.png";
@@ -38,7 +48,7 @@ class userRepository {
      * @return watchingRepository|false watchingRepository or False if nothing
      */
     public function getViewing(): watchingRepository|false {
-        $respond = request::xhr("runner/",'objects=%5B%7B%22type%22%3A%22c-p-u%22%2C%22id%22%3A%22'.$this->ID.'%22%2C%22data%22%3Afalse%7D%5D',$this->runner->user->session, true);
+        $respond = request::xhr("runner/",'objects=%5B%7B%22type%22%3A%22c-p-u%22%2C%22id%22%3A%22'.$this->ID.'%22%2C%22data%22%3Afalse%7D%5D',run::$runner->user->session, true);
 
         if (!isset($respond["objects"][0]["data"]["html"]["desktop"])) {
             return false;
