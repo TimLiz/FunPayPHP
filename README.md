@@ -3,7 +3,7 @@
 
 ## Требования
 ```
-1. PHP или выше 8.1
+1. PHP 8.1 или выше
 2. Curl-extension PHP
 ```
 
@@ -164,7 +164,8 @@ $FunPay->run();
 ```php
 $FunPay = new run(array(
     run::SETTINGS_DISABLE_LOT_RISE => true,
-    run::SETTINGS_DISABLE_MESSAGE_CHECK => true
+    run::SETTINGS_DISABLE_MESSAGE_CHECK => true,
+    run::SETTINGS_GOLDEN_KEY => "Ваш ключ", 
 ));
 ```
 
@@ -175,6 +176,10 @@ $FunPay = new run(array(
 #### Отключить поднятие лотов
 
 `run::SETTINGS_DISABLE_LOT_RISE`
+
+#### Ручной ввод goldenkey
+
+`run::SETTINGS_GOLDEN_KEY`
 
 #### Отключить бесконечный цикл, вам прийдётся вызывать функцию loop() вручную см выше"
 

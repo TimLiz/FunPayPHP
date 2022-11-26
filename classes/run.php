@@ -52,6 +52,11 @@ class run extends aliases
      */
     const SETTINGS_DO_NOT_CLEAR_CONSOLE = 4;
 
+    /**
+     * @var int SETTINGS_GOLDEN_KEY If set, bot will ignore config.json and use it from here
+     */
+    const SETTINGS_GOLDEN_KEY = 5;
+
     public events $events;
     public user $user;
     public message $message;
@@ -79,15 +84,13 @@ class run extends aliases
         echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
 
         //Checking is needs set up
-        if (!file_exists(__DIR__."/../config.json")) {
+        if (!file_exists(__DIR__."/../config.json") and !isset($settings[self::SETTINGS_GOLDEN_KEY])) {
             echo "Checking is bot configured...".PHP_EOL;
             require_once (__DIR__."/setup.php");
             setup::run();
         }
 
-        $config = json_decode(file_get_contents(__DIR__."/../config.json"), true);
-
-        self::$goldenKey = $config["key"];
+        self::$goldenKey = $settings[self::SETTINGS_GOLDEN_KEY] ?? json_decode(file_get_contents(__DIR__ . '/../config.json'), true)['key'];
         self::$runner = $this;
 
         //Creating folder for temp files
