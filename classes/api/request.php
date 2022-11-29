@@ -30,7 +30,7 @@ abstract class request
         $answerRaw = curl_exec($ch);
 
         if (str_contains($answerRaw, '<!-- a padding to disable MSIE and Chrome friendly error page -->')) {
-            echo 'Rate limit! Waiting...' . PHP_EOL;
+            run::$runner->output('Rate limit! Waiting...' . PHP_EOL);
             sleep(3);
             return request::xhr($api, $data, $session, $return, $post);
         }
@@ -69,7 +69,7 @@ abstract class request
 
         $exec = curl_exec($ch);
         if (str_contains($exec, "<!-- a padding to disable MSIE and Chrome friendly error page -->")) {
-            echo "Rate limit! Waiting..." . PHP_EOL;
+            run::$runner->output("Rate limit! Waiting..." . PHP_EOL);
             sleep(3);
             return request::basic($url, $session);
         }
@@ -89,7 +89,7 @@ abstract class request
         $return = curl_exec($ch);
 
         if (str_contains($return, '<!-- a padding to disable MSIE and Chrome friendly error page -->')) {
-            echo 'Rate limit! Waiting...' . PHP_EOL;
+            run::$runner->output('Rate limit! Waiting...' . PHP_EOL);
             sleep(3);
             return request::getApplication($session);
         }
@@ -111,7 +111,7 @@ abstract class request
         $return = curl_exec($ch);
 
         if (str_contains($return, '<!-- a padding to disable MSIE and Chrome friendly error page -->')) {
-            echo 'Rate limit! Waiting...' . PHP_EOL;
+            run::$runner->output('Rate limit! Waiting...' . PHP_EOL);
             sleep(3);
             return request::getSession();
         }

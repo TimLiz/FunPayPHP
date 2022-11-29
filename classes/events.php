@@ -13,7 +13,7 @@ class events {
     private array $onReady = array();
 
     public function __construct($parent) {
-        echo "Loading events...".PHP_EOL;
+        run::$runner->output("Loading events...".PHP_EOL);
         $this->parent = $parent;
     }
 

@@ -78,7 +78,7 @@ class user
 
     public function __construct(array $settings)
     {
-        echo "Loading user..." . PHP_EOL;
+        run::$runner->output("Loading user..." . PHP_EOL);
 
         $session = request::getSession();
         $application = request::getApplication($session);

@@ -8,12 +8,12 @@ class message {
     private run $parent;
 
     public function __construct(run $parent) {
-        echo "Loading messages...".PHP_EOL;
+        run::$runner->output("Loading messages...".PHP_EOL);
         $this->parent = $parent;
     }
 
     /**
-     * Message send function
+     * Sends messages
      *
      * @param messageBuilder $message Message builder object
      * @param int $id Destination user ID
@@ -38,6 +38,8 @@ class message {
     }
 
     /**
+     * Cheks for messages
+     *
      * @return messageRepository|bool False on error/no messages
      */
     public function checkForMsg():messageRepository|bool {
