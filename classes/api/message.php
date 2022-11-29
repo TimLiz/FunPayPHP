@@ -26,6 +26,10 @@ class message {
             $node = "users-".$id."-".run::$runner->user->ID;
         }
 
+        //We need to replace "\n" to "\\n", because funpay need this
+
+        $message->content = str_replace("\n", "\\n", $message->content);
+
         //We need to require chat_bookmarks here, because FunPay needs it to send messages to account with reviews, without reviews - no,
         //IDK why, do not ask me
         $answer = request::xhr("runner/", 'objects=[{"type":"chat_bookmarks","id":"'.run::$runner->user->ID.'","data":false}]&request={"action":"chat_message","data":{"node":"'.$node.'","content":"'.$message->content.'"}}&csrf_token='.run::$runner->user->csrf, run::$runner->user->session, true);
