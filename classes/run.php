@@ -114,9 +114,13 @@ class run extends aliases
      * @throws Exception
      */
     public function __construct(array $settings = array()) {
-        //Checking for extensions
+        // Checking for extensions
         if (!extension_loaded("curl")) throw new Exception("Curl extension is not loaded!");
         if (!extension_loaded("json")) throw new Exception("Json extension is not loaded!");
+
+        // Declaring very important things
+        self::$goldenKey = $settings[self::SETTINGS_GOLDEN_KEY] ?? json_decode(file_get_contents(__DIR__ . '/../config.json'), true)['key'];
+        self::$runner = $this;
 
         // Declaring output function
         if (isset($settings[self::SETTINGS_OUTPUTFUNCTION])) {
@@ -140,9 +144,6 @@ class run extends aliases
             require_once (__DIR__."/setup.php");
             setup::run();
         }
-
-        self::$goldenKey = $settings[self::SETTINGS_GOLDEN_KEY] ?? json_decode(file_get_contents(__DIR__ . '/../config.json'), true)['key'];
-        self::$runner = $this;
 
         //Creating folder for temp files
         if (!file_exists(__DIR__ . "/../temp")) {
