@@ -30,6 +30,10 @@ class user
      */
     public readonly int $ID;
     /**
+     * @var string Avatar URL
+     */
+    public readonly string $avatarURL;
+    /**
      * @var string Session
      */
     public readonly string $session;
