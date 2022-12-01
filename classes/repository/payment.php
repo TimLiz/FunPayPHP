@@ -16,7 +16,7 @@ class paymentRepository {
      */
     public readonly string $nameRaw;
     /**
-     * @var string $name Name of payment(ex: 🔓 | Jailbreak Common safe(5k)) Tip: This won't work if you're using ", " in you're item name, be carefully!
+     * @var string $name Name of payment(ex: 🔓 | Jailbreak Common safe(5k))
      */
     public string $name;
     /**
@@ -26,9 +26,9 @@ class paymentRepository {
      */
     public string|null $category;
     /**
-     * @var string|null $amount Amount items paid for(ex: 2 шт) Tip: This won't work if you're using ", " in you're item name, be carefully!
+     * @var int $amount Amount items paid for(ex: 2 шт)
      */
-    public string|null $amount;
+    public int $amount;
     /**
      * @var string|null $username Username of buyer Tip: This won't work if you're using ", " in you're item name, be carefully!
      */
@@ -64,10 +64,35 @@ class paymentRepository {
         @$this->underNameRaw = $payment->childNodes->item(5)->childNodes->item(1)->textContent;
         @$this->paymentURL = $payment->attributes->item(0)->textContent;
 
+        //Getting payment page
+        $paymentPage = request::basic("orders/".trim($this->ID, "#")."/", run::$runner->user->session);
+        $paymentPage = new parser($paymentPage);
+
+        $params = $paymentPage->getByClassname("param-item");
+        $iterator = $params->getIterator();
+
+        while ($current = $iterator->current()) {
+            $text = $current->childNodes->item(0)->textContent;
+
+            if ($text == "Количество") {
+                $this->amount = (int) $current->childNodes->item(3)->textContent;
+            } elseif ($text == "Краткое описание") {
+                $this->name = $current->childNodes->item(1)->textContent;
+            }
+
+            $iterator->next();
+        }
+
+        if (!isset($this->amount)) {
+            $this->amount = 1;
+        }
+
+        if (!isset($this->name)) {
+            $this->name = "Unknown";
+        }
+
         @$nameRawExploded = explode(", ", $this->nameRaw);
-        @$this->name = $nameRawExploded[0];
         @$this->category = $nameRawExploded[1];
-        @$this->amount = $nameRawExploded[2];
         @$this->username = $nameRawExploded[3];
 
         @$underNameExploded = explode(", ", $this->underNameRaw);
@@ -81,7 +106,7 @@ class paymentRepository {
         @$ID = explode("/", $link)[4];
 
         if (!isset(run::$runner->users[$this->ID])) {
-            $this->user = new userRepository($ID, run::$runner);
+            $this->user = new userRepository($ID);
         } else {
             $this->user = run::$runner->users[$this->ID];
         }
