@@ -7,6 +7,10 @@ use event;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
 
+/**
+ * This class is YOU
+ * Here you can get things like you're ID, name, balance, etc.
+ */
 class user
 {
     /**
@@ -37,6 +41,9 @@ class user
      * @var array Lots
      */
     private array $lots = array();
+    /**
+     * @var bool System bool, marks are lots defined. Used for autoRise
+     */
     private bool $isLotsDefined = false;
     private array $storage = array();
     /**
@@ -55,6 +62,10 @@ class user
      * @var string URL of user profile(ex: https://funpay.com/users/1110493/)
      */
     public string $url;
+    /**
+     * @var string Username
+     */
+    public string $username;
     /**
      * Updates every 10 minutes
      *
@@ -190,6 +201,14 @@ class user
 
             //Getting formatted rating
             @$this->rating = explode(" ", $this->ratingRaw)[1];
+
+            if (!isset($this->username) || !isset($this->avatarURL)) {
+                $profile = $parser->getByClassname('profile');
+                $this->username = $profile->item(0)->childNodes->item(3)->childNodes->item(1)->childNodes->item(0)->textContent;
+
+                $style = $parser->getByClassname("avatar-photo")->item(0)->attributes->getNamedItem("style")->textContent;
+                $this->avatarURL = explode("(", explode(")", $style)[0])[1];
+            }
 
             return true;
         } catch (Exception) {
