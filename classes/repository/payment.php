@@ -55,6 +55,9 @@ class paymentRepository {
      */
     public lot|null $lotObject;
 
+    /**
+     * @var userRepository Buyer object
+     */
     public userRepository $user;
 
     public function __construct(DOMNode $payment)
@@ -204,6 +207,8 @@ class paymentRepository {
     }
 
     /**
+     * Refunds money to buyer
+     *
      * @return bool Returns True on success
      * @throws Exception On error
      */

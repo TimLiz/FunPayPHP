@@ -15,7 +15,7 @@ class messageRepository {
     /**
      * @var string Message content
      * @deprecated
-     * WARNING! Do not use it in new projects, it will be removed soon
+     * @removed
      */
     public readonly string $message;
     /**
@@ -44,7 +44,6 @@ class messageRepository {
         /*** @var DOMElement $msgDiv */
         $user = $msgDiv->childNodes[1];
 
-        $this->message = $user->childNodes[5]->textContent;
         $this->content = $user->childNodes[5]->textContent;
         $this->date = $user->childNodes[7]->textContent;
         $this->node = $user->attributes[0]->textContent;
@@ -76,7 +75,7 @@ class messageRepository {
     /**
      * Replies to the message
      *
-     * @throws Exception
+     * @throws Exception On error
      */
     public function reply(messageBuilder $msg): void {
         $this->author->sendMessage($msg);

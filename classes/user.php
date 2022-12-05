@@ -3,6 +3,7 @@
 namespace run;
 
 use DOMElement;
+use Error;
 use event;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
@@ -49,6 +50,9 @@ class user
      * @var bool System bool, marks are lots defined. Used for autoRise
      */
     private bool $isLotsDefined = false;
+    /**
+     * @var array|mixed This is system property, used for storage
+     */
     private array $storage = array();
     /**
      * Updates every 10 minutes
@@ -151,6 +155,29 @@ class user
         }
 
         return false;
+    }
+
+    /**
+     * Checks golden key for valid.
+     *
+     * @return bool True if key valid and false if not
+     * @throws Exception On request error
+     */
+    static function validateKey():bool {
+        try {
+            $answer = request::xhr("lots/raise", http_build_query([
+                'game_id' => 141,
+                'node_id' => 1154
+            ]), "NothingHere", true, true, true);
+
+            if (str_contains($answer, "Необходимо авторизоваться.")) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception $e) {
+            throw new Error("Failed to validate key. Request problem. ".$e->getMessage());
+        }
     }
 
 

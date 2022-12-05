@@ -11,8 +11,10 @@
 namespace run;
 
 use Closure;
+use Error;
 use event;
 use Exception;
+
 
 require_once(__DIR__ . "/events.php");
 require_once(__DIR__ . "/aliases.php");
@@ -121,6 +123,10 @@ class run extends aliases
         // Declaring very important things
         self::$goldenKey = $settings[self::SETTINGS_GOLDEN_KEY] ?? json_decode(file_get_contents(__DIR__ . '/../config.json'), true)['key'];
         self::$runner = $this;
+
+        if (!user::validateKey()) {
+            throw new Exception("Invalid golden key!");
+        }
 
         // Declaring output function
         if (isset($settings[self::SETTINGS_OUTPUTFUNCTION])) {

@@ -7,9 +7,19 @@ use Exception;
 abstract class request
 {
     /**
+     * This is basic XHR request to FunPay API
+     *
+     * @var string $api URL(Without https://funpay.com/)
+     * @var string $data Data to send
+     * @var string $session User session
+     * @var bool $return Should function return response or not
+     * @var bool $post Is it POST request? False if GET
+     * @var bool $returnRawWithoutParse Should function return raw response without parsing? This also ignore errors
+     *
      * @throws Exception
+     * @return string|bool|array String if $returnRawWithoutParse is true, bool if $return is false and request was sucess, array if $return is true and sucess
      */
-    static public function xhr(string $api, string $data = null, string $session = null, bool $return = false, bool $post = true): bool|array
+    static public function xhr(string $api, string $data, string $session, bool $return = false, bool $post = true, bool $returnRawWithoutParse = false): bool|array|string
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://funpay.com/' . $api);
@@ -33,6 +43,10 @@ abstract class request
             run::$runner->output('Rate limit! Waiting...' . PHP_EOL);
             sleep(3);
             return request::xhr($api, $data, $session, $return, $post);
+        }
+
+        if ($returnRawWithoutParse) {
+            return $answerRaw;
         }
 
         $answer = json_decode($answerRaw, true);
