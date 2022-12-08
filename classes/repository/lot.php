@@ -30,7 +30,7 @@ class lot
      */
     static function getLot(int $lotId): lot
     {
-        $answer = request::xhr('lots/offerEdit?offer=' . $lotId, null, run::$runner->user->session, true, false);
+        $answer = request::xhr('lots/offerEdit?offer=' . $lotId, "", run::$runner->user->session, true, false);
 
         $DOM = new DOMDocument();
         $DOM->loadHTML(mb_convert_encoding($answer["html"], 'HTML-ENTITIES', 'utf-8'));
