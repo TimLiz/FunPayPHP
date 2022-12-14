@@ -69,6 +69,11 @@ class paymentRepository {
 
         //Getting payment page
         $paymentPage = request::basic("orders/".trim($this->ID, "#")."/", run::$runner->user->session);
+
+        if ($paymentPage == null) {
+            return;
+        }
+
         $paymentPage = new parser($paymentPage);
 
         $params = $paymentPage->getByClassname("param-item");
@@ -219,6 +224,10 @@ class paymentRepository {
 
     static public function new():false|paymentRepository {
         $sales = request::basic("orders/trade", run::$runner->user->session);
+
+        if ($sales == null) {
+            return false;
+        }
 
         $parser = new parser($sales);
         $info = $parser->getByClassname("info");
